@@ -88,7 +88,7 @@ public class ImageService {
 
     public String getPredictionImageSavePath(String path) {
         Path oriPath = Paths.get(path);
-        return Paths.get(oriPath.getParent().toString(), "prediction-" + oriPath.getFileName().toString()).toString();
+        return Paths.get(oriPath.getParent().toString(), "prediction-" + System.currentTimeMillis() + oriPath.getFileName().toString()).toString();
     }
 
     public String getPredictionZipSavePath(String path) {

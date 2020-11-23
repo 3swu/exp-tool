@@ -42,16 +42,29 @@ public class CommonService {
                     .field("image", new File(expRequest.getImagePath()))
                     .asFile(predictionSavePath)
                     .getBody();
-            ImageDO predictionImageDO = imageService.storePath(predictionSavePath);
+            if (isFileExisted(predictionSavePath)) {
+                ImageDO predictionImageDO = imageService.storePath(predictionSavePath);
+                return ExpResult.builder()
+                        .cost(System.currentTimeMillis() - startTime)
+                        .msg("success")
+                        .success(true)
+                        .results(Lists.newArrayList(ImageResult.builder().imageKey(predictionImageDO.getKey()).build()))
+                        .build();
+            }
             return ExpResult.builder()
                     .cost(System.currentTimeMillis() - startTime)
-                    .msg("success")
-                    .success(true)
-                    .results(Lists.newArrayList(ImageResult.builder().imageKey(predictionImageDO.getKey()).build()))
+                    .msg("could not receive image from exp service")
+                    .success(false)
+                    .results(Lists.newArrayList())
                     .build();
         } catch (Exception e) {
             log.error("{} experiment predict service error, request: {}", expEnum.getName(), expRequest.toString(), e);
             return ExpResult.builder().success(false).results(Lists.newArrayList()).build();
         }
+    }
+
+    private boolean isFileExisted(String path) {
+        File file = new File(path);
+        return file.exists();
     }
 }
